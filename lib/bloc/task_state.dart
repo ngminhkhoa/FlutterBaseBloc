@@ -10,9 +10,9 @@ class TaskInitial extends TaskState {}
 class TaskLoadingState extends TaskState {}
 
 class TaskSuccessState extends TaskState {
-  final String name;
+  final List<TaskEntity> dataTasks;
 
-  TaskSuccessState({required this.name});
+  TaskSuccessState({required this.dataTasks});
 }
 
 class TaskErrorState extends TaskState {}

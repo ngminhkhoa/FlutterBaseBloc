@@ -28,48 +28,76 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BlocConsumer<TaskBloc, TaskState>(
-              bloc: taskBloc,
-              listenWhen: (pre, cur) => cur is TasksActionState,
-              buildWhen: (pre, cur) => cur is! TasksActionState,
-              listener: (context, state) {
-                if (state is UpdateTaskSuccessState) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text('Updated')));
-                } else if (state is DeleteTaskSuccessState) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text('Deleted')));
-                }
-              },
-              builder: (context, state) {
-                switch (state.runtimeType) {
-                  case TaskLoadingState:
-                    return CircularProgressIndicator();
-                  case TaskSuccessState:
-                    final successState = state as TaskSuccessState;
-                    return Text(
-                      successState.name,
-                      style: TextStyle(fontSize: 25),
-                    );
-                  default:
-                    return Text("...");
-                }
-              },
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  taskBloc.add(
-                      UpdateTaskEvent(newName: "I just updated title text"));
+            Expanded(
+              child: BlocConsumer<TaskBloc, TaskState>(
+                bloc: taskBloc,
+                listenWhen: (pre, cur) => cur is TasksActionState,
+                buildWhen: (pre, cur) => cur is! TasksActionState,
+                listener: (context, state) {
+                  if (state is UpdateTaskSuccessState) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Updated')));
+                  } else if (state is DeleteTaskSuccessState) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Deleted')));
+                  }
                 },
-                child: Text("Click me to update")),
-            ElevatedButton(
-                onPressed: () {
-                  taskBloc.add(DeleteTaskEvent());
+                builder: (context, state) {
+                  print(state);
+                  switch (state.runtimeType) {
+                    case TaskLoadingState:
+                      return CircularProgressIndicator();
+                    case TaskSuccessState:
+                      final successState = state as TaskSuccessState;
+                      if (successState.dataTasks.isEmpty) {
+                        return Text(
+                          "Empty Task",
+                          style: TextStyle(fontSize: 25),
+                        );
+                      } else {
+                        return ListView.builder(
+                            itemCount: successState.dataTasks.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  child: Text(successState.dataTasks[index].id
+                                      .toString()),
+                                ),
+                                title:
+                                    Text(successState.dataTasks[index].title),
+                              );
+                            });
+                      }
+                    default:
+                      return Text("...");
+                  }
                 },
-                child: Text("Click me to delete"))
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        taskBloc.add(AddTaskEvent(
+                            nameAdd: "I just added new title text Khoa"));
+                      },
+                      child: Text("Click me to add")),
+                  ElevatedButton(
+                      onPressed: () {
+                        taskBloc.add(UpdateTaskEvent(
+                            newName: "I just updated title text 999"));
+                      },
+                      child: Text("Click me to update")),
+                  ElevatedButton(
+                      onPressed: () {
+                        taskBloc.add(DeleteTaskEvent(idDelete: 3));
+                      },
+                      child: Text("Click me to delete"))
+                ],
+              ),
+            )
           ],
         ),
       ),

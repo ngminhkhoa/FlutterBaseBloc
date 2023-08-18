@@ -11,6 +11,14 @@ class UpdateTaskEvent extends TaskEvent {
   UpdateTaskEvent({required this.newName});
 }
 
-class AddTaskEvent extends TaskEvent {}
+class AddTaskEvent extends TaskEvent {
+  final String nameAdd;
 
-class DeleteTaskEvent extends TaskEvent {}
+  AddTaskEvent({required this.nameAdd});
+}
+
+class DeleteTaskEvent extends TaskEvent {
+  final int idDelete;
+
+  DeleteTaskEvent({required this.idDelete});
+}
